@@ -99,13 +99,15 @@ class ModelWorker:
         self.conv = get_conversation_template(model_path)
         if self.tokenizer.pad_token == None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
-
+        print(self.model.config)
         if hasattr(self.model.config, "max_sequence_length"):
             self.context_len = self.model.config.max_sequence_length
         elif hasattr(self.model.config, "max_position_embeddings"):
             self.context_len = self.model.config.max_position_embeddings
         else:
             self.context_len = 2048
+        if "chatglm2" in self.model_names:
+            self.context_len = 32768
 
         # generate_stream
         is_chatglm = "chatglm" in str(type(self.model)).lower()

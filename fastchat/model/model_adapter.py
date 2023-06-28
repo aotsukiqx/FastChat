@@ -384,6 +384,24 @@ class ChatGLMAdapter(BaseModelAdapter):
     def get_default_conv_template(self, model_path: str) -> Conversation:
         return get_conv_template("chatglm")
 
+class ChatGLM2Adapter(BaseModelAdapter):
+    """The model adapter for THUDM/chatglm2-6b"""
+
+    def match(self, model_path: str):
+        return "chatglm2" in model_path
+
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        revision = from_pretrained_kwargs.get("revision", "main")
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_path, max_seq_len=8192, trust_remote_code=True, revision=revision
+        )
+        model = AutoModel.from_pretrained(
+            model_path, max_seq_len=8192, trust_remote_code=True, **from_pretrained_kwargs
+        )
+        return model, tokenizer
+
+    def get_default_conv_template(self, model_path: str) -> Conversation:
+        return get_conv_template("chatglm")
 
 class DollyV2Adapter(BaseModelAdapter):
     """The model adapter for databricks/dolly-v2-12b"""
